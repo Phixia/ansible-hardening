@@ -140,30 +140,30 @@
 
 # We shouldn't get any output from this grep since it looks for configuration
 # lines for the SNMP v1 and v2c protocols.
-- name: Check for insecure SNMP protocols (for V-38660)
-  shell: "egrep 'v1|v2c|com2sec|community' /etc/snmp/snmpd.conf | grep -v '^\\s*#'"
-  register: v38660_result
-  changed_when: False
-  failed_when: False
-  check_mode: no
-  when:
-    - snmpd_installed is defined
-    - snmpd_installed | bool
-  tags:
-    - cat2
-    - V-38660
+#- name: Check for insecure SNMP protocols (for V-38660)
+#  shell: "egrep 'v1|v2c|com2sec|community' /etc/snmp/snmpd.conf | grep -v '^\\s*#'"
+#  register: v38660_result
+#  changed_when: False
+#  failed_when: False
+#  check_mode: no
+#  when:
+#    - snmpd_installed is defined
+#    - snmpd_installed | bool
+ # tags:
+ #   - cat2
+ #   - V-38660
 
-- name: V-38660 - The snmpd service must only use SNMPv3 or newer
-  fail:
-    msg: "Insecure SNMP configuration found -- use SNMPv3 only"
-  when:
-    - not check_mode
-    - snmpd_installed is defined
-    - snmpd_installed | bool
-    - v38660_result.rc == 0
-  tags:
-    - cat2
-    - V-38660
+#- name: V-38660 - The snmpd service must only use SNMPv3 or newer
+#  fail:
+#    msg: "Insecure SNMP configuration found -- use SNMPv3 only"
+#  when:
+#    - not check_mode
+#    - snmpd_installed is defined
+#    - snmpd_installed | bool
+#    - v38660_result.rc == 0
+#  tags:
+#    - cat2
+#    - V-38660
 
 - name: V-38675 - Process core dump must be disabled
   lineinfile:
