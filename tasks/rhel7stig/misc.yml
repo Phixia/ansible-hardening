@@ -13,49 +13,49 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-- name: Check autofs service
-  command: systemctl status autofs
-  register: autofs_check
-  failed_when: autofs_check.rc not in [0,3,4]
-  changed_when: False
-  check_mode: no
-  tags:
-    - always
+#- name: Check autofs service
+#  command: systemctl status autofs
+#  register: autofs_check
+#  failed_when: autofs_check.rc not in [0,3,4]
+#  changed_when: False
+#  check_mode: no
+#  tags:
+#    - always
 
-- name: V-71985 - File system automounter must be disabled unless required.
-  service:
-    name: autofs
-    state: stopped
-    enabled: no
-  when:
-    - autofs_check.rc not in [3,4]
-    - security_rhel7_disable_autofs | bool
-  tags:
-    - medium
-    - misc
-    - V-71985
+#- name: V-71985 - File system automounter must be disabled unless required.
+#  service:
+#    name: autofs
+#    state: stopped
+#    enabled: no
+#  when:
+#    - autofs_check.rc not in [3,4]
+#    - security_rhel7_disable_autofs | bool
+#  tags:
+ #   - medium
+ #   - misc
+ #   - V-71985
 
 # This returns an exit code of 0 if it's running, 3 if it's masked.
-- name: Check if ctrl-alt-del.target is already masked
-  command: systemctl status ctrl-alt-del.target
-  register: cad_mask_check
-  check_mode: no
-  changed_when: False
-  failed_when: cad_mask_check.rc not in [0,3]
-  tags:
-    - always
+#- name: Check if ctrl-alt-del.target is already masked
+#  command: systemctl status ctrl-alt-del.target
+#  register: cad_mask_check
+#  check_mode: no
+#  changed_when: False
+#  failed_when: cad_mask_check.rc not in [0,3]
+#  tags:
+#    - always
 
-- name: V-71993 - The x86 Ctrl-Alt-Delete key sequence must be disabled
-  command: systemctl mask ctrl-alt-del.target
-  when:
-    - security_rhel7_disable_ctrl_alt_delete | bool
-    - cad_mask_check.rc != 3
-  notify:
-    - reload systemd
-  tags:
-    - high
-    - misc
-    - V-71993
+#- name: V-71993 - The x86 Ctrl-Alt-Delete key sequence must be disabled
+#  command: systemctl mask ctrl-alt-del.target
+#  when:
+#    - security_rhel7_disable_ctrl_alt_delete | bool
+#    - cad_mask_check.rc != 3
+#  notify:
+#    - reload systemd
+#  tags:
+#    - high
+#    - misc
+#    - V-71993
 
 - name: Check for /home on mounted filesystem
   debug:
@@ -257,39 +257,39 @@
     - V-72269
 
 # Returns 0 if installed, 3 if not installed
-- name: Check firewalld status
-  command: systemctl status firewalld
-  register: firewalld_status_check
-  failed_when: firewalld_status_check.rc not in [0,3,4]
-  changed_when: False
-  check_mode: no
-  tags:
-    - always
+#- name: Check firewalld status
+#  command: systemctl status firewalld
+#  register: firewalld_status_check
+#  failed_when: firewalld_status_check.rc not in [0,3,4]
+#  changed_when: False
+#  check_mode: no
+#  tags:
+#    - always
 
-- name: Ensure firewalld is running and enabled
-  service:
-    name: firewalld
-    state: started
-    enabled: yes
-  when:
-    - firewalld_status_check.rc not in [3,4]
-    - security_enable_firewalld | bool
-  tags:
-    - medium
-    - misc
-    - V-72273
+#- name: Ensure firewalld is running and enabled
+#  service:
+#    name: firewalld
+#    state: started
+#    enabled: yes
+ # when:
+ #   - firewalld_status_check.rc not in [3,4]
+ #   - security_enable_firewalld | bool
+ # tags:
+ #   - medium
+ #   - misc
+ #   - V-72273
 
-- name: Limit new TCP connections to 25/minute and allow bursting to 100
-  command: "firewall-cmd --direct --add-rule ipv4 filter IN_public_allow 0 -m tcp -p tcp -m limit --limit {{ security_enable_firewalld_rate_limit_per_minute }}/minute --limit-burst {{ security_enable_firewalld_rate_limit_burst }} -j ACCEPT"
-  register: add_rate_limit_firewalld_rule
-  changed_when: "'ALREADY_ENABLED' not in add_rate_limit_firewalld_rule.stdout"
-  when:
-    - firewalld_status_check.rc != 3
-    - security_enable_firewalld_rate_limit | bool
-  tags:
-    - medium
-    - misc
-    - V-72271
+#- name: Limit new TCP connections to 25/minute and allow bursting to 100
+#  command: "firewall-cmd --direct --add-rule ipv4 filter IN_public_allow 0 -m tcp -p tcp -m limit --limit {{ security_enable_firewalld_rate_limit_per_minute }}/minute --limit-burst {{ security_enable_firewalld_rate_limit_burst }} -j ACCEPT"
+#  register: add_rate_limit_firewalld_rule
+ # changed_when: "'ALREADY_ENABLED' not in add_rate_limit_firewalld_rule.stdout"
+ # when:
+ #   - firewalld_status_check.rc != 3
+ #   - security_enable_firewalld_rate_limit | bool
+ # tags:
+ #   - medium
+ #   - misc
+ #   - V-72271
 
 # Linting checks need to be skipped because this command doesn't create any
 # files.
